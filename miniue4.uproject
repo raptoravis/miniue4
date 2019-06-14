@@ -1,6 +1,16 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{CB835D75-4281-3DE1-3901-47AAA34305C0}",
+	"EngineAssociation": "{AE1062B4-41D1-E216-8E22-1AAB07BEDDBA}",
 	"Category": "",
-	"Description": ""
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "miniue4",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
 }

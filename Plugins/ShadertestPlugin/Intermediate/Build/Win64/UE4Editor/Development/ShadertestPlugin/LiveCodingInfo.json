@@ -1,0 +1,13 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.ShadertestPlugin.cpp.obj": [
+			"MyShaderTest.cpp.obj",
+			"ShadertestPlugin.cpp.obj"
+		],
+		"Module.ShadertestPlugin.gen.cpp.obj": [
+			"MyShaderTest.gen.cpp.obj",
+			"ShadertestPlugin.init.gen.cpp.obj"
+		]
+	}
+}
