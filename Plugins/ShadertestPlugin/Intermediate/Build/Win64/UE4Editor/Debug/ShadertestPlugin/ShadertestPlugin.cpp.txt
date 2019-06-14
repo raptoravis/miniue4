@@ -1,2 +1,0 @@
-﻿C:\developer\miniue4\Plugins\ShadertestPlugin\Intermediate\Build\Win64\UE4Editor\Debug\ShadertestPlugin\Definitions.ShadertestPlugin.h
-C:\developer\miniue4\Plugins\ShadertestPlugin\Source\ShadertestPlugin\Public\ShadertestPlugin.h

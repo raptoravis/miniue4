@@ -1,7 +1,0 @@
-﻿C:\developer\miniue4\Plugins\ShadertestPlugin\Intermediate\Build\Win64\UE4Editor\Debug\ShadertestPlugin\Definitions.ShadertestPlugin.h
-C:\developer\miniue4\Plugins\ShadertestPlugin\Intermediate\Build\Win64\UE4Editor\Inc\ShadertestPlugin\MyShaderTest.gen.cpp
-C:\developer\p4ws\spacegem\ue4\Engine\Source\Runtime\CoreUObject\Public\UObject\GeneratedCppIncludes.h
-C:\developer\p4ws\spacegem\ue4\Engine\Source\Runtime\CoreUObject\Public\UObject\MetaData.h
-C:\developer\miniue4\Plugins\ShadertestPlugin\Source\ShadertestPlugin\Public\MyShaderTest.h
-C:\developer\miniue4\Plugins\ShadertestPlugin\Intermediate\Build\Win64\UE4Editor\Inc\ShadertestPlugin\MyShaderTest.generated.h
-C:\developer\miniue4\Plugins\ShadertestPlugin\Intermediate\Build\Win64\UE4Editor\Inc\ShadertestPlugin\ShadertestPlugin.init.gen.cpp
