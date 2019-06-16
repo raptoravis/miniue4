@@ -19,6 +19,9 @@ struct FMyShaderStructData
 		FLinearColor Colorthree;
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = ShaderData)
 		FLinearColor ColorFour;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = ShaderData)
+		int32 ColorIndex;
 };
 
 
@@ -28,5 +31,7 @@ class UTestShaderBlueprintLibrary : public UBlueprintFunctionLibrary
 	GENERATED_UCLASS_BODY()
 
 	UFUNCTION(BlueprintCallable, Category="ShaderTestPlugin", meta=(WorldContext="WorldCongtextObject"))
-	static void DrawTestShaderRenderTarget(class UTextureRenderTarget2D* OutputRenderTarget, AActor* Ac, FLinearColor MyColor, UTexture* MyTexture);
+	static void DrawTestShaderRenderTarget(class UTextureRenderTarget2D* OutputRenderTarget, 
+		AActor* Ac, FLinearColor MyColor, 
+		UTexture* MyTexture, FMyShaderStructData ShaderStructData);
 };
