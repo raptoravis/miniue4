@@ -348,8 +348,36 @@ static void TextureWriting_RenderThread(
 	FRHITexture2D* TexRef2D = (FRHITexture2D*)TexRef;
 
 	TArray<FColor> Bitmap;
+	//TArray<uint32> sourcedata;
+	//-----------------------------------
 	uint32 LolStride = 0;
-	char* TextureDataPtr = (char*)RHICmdList.LockTexture2D(TexRef2D, 0, EResourceLockMode::RLM_ReadOnly, LolStride, false);
+	char* TextureDataPtr = (char*)RHICmdList.LockTexture2D(TexRef2D, 0, EResourceLockMode::RLM_WriteOnly, LolStride, false);
+
+	for (uint32 Row = 0; Row < TexRef2D->GetSizeY(); ++Row)
+	{
+		uint32* PixelPtr = (uint32*)TextureDataPtr;
+		for (uint32 Col = 0; Col < TexRef2D->GetSizeX(); ++Col)
+		{
+			uint32 EncodedPixel = *PixelPtr;
+			uint8 r = 255;
+			uint8 g = 0;
+			uint8 b = 0;
+			uint8 a = 255;
+			*PixelPtr = r | (g << 8) | (b << 16) | (a << 24);
+			//sourcedata.Add(*PixelPtr);
+			PixelPtr++;
+		}
+		// move to next row:
+		TextureDataPtr += LolStride;
+	}
+	RHICmdList.UnlockTexture2D(TexRef2D, 0, false);
+
+	//FUpdateTextureRegion2D region = FUpdateTextureRegion2D(0, 0, 0, 0, TexRef2D->GetSizeX(), TexRef2D->GetSizeY());
+	//RHIUpdateTexture2D(TexRef2D, 0, region, sizeof(uint32) * TexRef2D->GetSizeX() * TexRef2D->GetSizeY(), (uint8*)sourcedata.GetData());
+
+	//-----------------------------------
+	//Bitmap.Reset();
+	TextureDataPtr = (char*)RHICmdList.LockTexture2D(TexRef2D, 0, EResourceLockMode::RLM_ReadOnly, LolStride, false);
 
 	for (uint32 Row = 0; Row < TexRef2D->GetSizeY(); ++Row)
 	{
@@ -384,7 +412,6 @@ static void TextureWriting_RenderThread(
 		UE_LOG(LogConsoleResponse, Error, TEXT("Failed to save BMP, format or texture type is not supported"));
 	}
 }
-
 
 void UTestShaderBlueprintLibrary::TextureWriting(UTexture2D* TextureToBeWrite, AActor* selfref)
 {
@@ -443,7 +470,6 @@ void UTestShaderBlueprintLibrary::TextureWriting(UTexture2D* TextureToBeWrite, A
 	);
 
 }
-
 
 
 #undef LOCTEXT_NAMESPACE  
