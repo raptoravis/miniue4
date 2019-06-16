@@ -471,5 +471,94 @@ void UTestShaderBlueprintLibrary::TextureWriting(UTexture2D* TextureToBeWrite, A
 
 }
 
+class FMyComputeShader : public FGlobalShader
+{
+public:
 
+	FMyComputeShader() {}
+
+	FMyComputeShader(const ShaderMetaType::CompiledShaderInitializerType& Initializer)
+		: FGlobalShader(Initializer)
+	{
+		OutputSurface.Bind(Initializer.ParameterMap, TEXT("OutputSurface"));
+	}
+
+	static bool ShouldCache(EShaderPlatform Platform)
+	{
+		return true;
+	}
+
+	static bool ShouldCompilePermutation(const FGlobalShaderPermutationParameters& Parameters)
+	{
+		//return IsFeatureLevelSupported(Parameters.Platform, ERHIFeatureLevel::SM4);  
+		return true;
+	}
+
+	static void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& Parameters, FShaderCompilerEnvironment& OutEnvironment)
+	{
+		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
+		OutEnvironment.SetDefine(TEXT("TEST_MICRO"), 1);
+	}
+
+	void SetSurfaces(
+		FRHICommandListImmediate& RHICmdList,
+		FUnorderedAccessViewRHIParamRef& OutputSurfaceUAV)
+	{
+		if (OutputSurface.IsBound())
+		{
+			FComputeShaderRHIParamRef ref = (FRHIComputeShader*)this;
+			RHICmdList.SetUAVParameter(ref, OutputSurface.GetBaseIndex(), OutputSurfaceUAV);
+		}
+	}
+
+	void UnbindBuffers(
+		FRHICommandListImmediate& RHICmdList)
+	{
+		if (OutputSurface.IsBound())
+		{
+			FComputeShaderRHIParamRef ref = (FRHIComputeShader*)this;
+			RHICmdList.SetUAVParameter(ref, OutputSurface.GetBaseIndex(), FUnorderedAccessViewRHIParamRef());
+		}
+	}
+
+	virtual bool Serialize(FArchive& Ar) override
+	{
+		bool bShaderHasOutdatedParameters = FGlobalShader::Serialize(Ar);
+		Ar << OutputSurface;
+		return bShaderHasOutdatedParameters;
+	}
+
+private:
+	FShaderResourceParameter OutputSurface;
+
+};
+
+void UTestShaderBlueprintLibrary::CopySurfaceToTexture(UTextureRenderTarget2D* OutRenderTarget)
+{
+	FRHICommandListImmediate& RHICmdList = FRHICommandListExecutor::GetImmediateCommandList();
+	int32 SizeX = OutRenderTarget->SizeX;
+	int32 SizeY = OutRenderTarget->SizeY;
+
+	FRHIResourceCreateInfo CreateInfo;
+	FTexture2DRHIRef Texture = RHICreateTexture2D(SizeX, SizeY, PF_A32B32G32R32F, 1, 1, TexCreate_ShaderResource | TexCreate_UAV, CreateInfo);
+	FUnorderedAccessViewRHIParamRef TextureUAV = RHICreateUnorderedAccessView(Texture);
+
+	FMyComputeShader* ComputeShader = (FMyComputeShader*)0;
+	ComputeShader->SetSurfaces(RHICmdList, TextureUAV);
+	DispatchComputeShader(RHICmdList, ComputeShader, SizeX / 32, SizeY / 32, 1);
+	ComputeShader->UnbindBuffers(RHICmdList);
+
+	FTextureReferenceRHIRef TestRTTextureRef = OutRenderTarget->TextureReference.TextureReferenceRHI;
+	FRHITexture* RTTexture = TestRTTextureRef->GetTextureReference()->GetReferencedTexture();
+	if (!RTTexture) {
+		return;
+	}
+
+	FRHICopyTextureInfo copyInfo;
+	copyInfo.Size.X = SizeX;
+	copyInfo.Size.Y = SizeY;
+
+	RHICmdList.CopyTexture(Texture, RTTexture, copyInfo);
+
+}
 #undef LOCTEXT_NAMESPACE  

@@ -38,4 +38,8 @@ class UTestShaderBlueprintLibrary : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintCallable, Category = "ShaderTestPlugin", meta = (WorldContext = "WorldCongtextObject"))
 	static void TextureWriting(UTexture2D* TextureToBeWrite, AActor* selfref);
+
+
+	UFUNCTION(BlueprintCallable, Category = "ShaderTestPlugin", meta = (WorldContext = "WorldCongtextObject"))
+	void CopySurfaceToTexture(UTextureRenderTarget2D* OutRenderTarget);
 };
