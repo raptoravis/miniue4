@@ -26,7 +26,8 @@ class FMyShaderTest : public FGlobalShader
 {
 public:
 
-	FMyShaderTest() {}
+	FMyShaderTest() {
+	}
 
 	FMyShaderTest(const ShaderMetaType::CompiledShaderInitializerType& Initializer)
 		: FGlobalShader(Initializer)
@@ -77,7 +78,8 @@ class FShaderTestVS : public FMyShaderTest
 	DECLARE_SHADER_TYPE(FShaderTestVS, Global);
 
 public:
-	FShaderTestVS() {}
+	FShaderTestVS() {
+	}
 
 	FShaderTestVS(const ShaderMetaType::CompiledShaderInitializerType& Initializer)
 		: FMyShaderTest(Initializer)
@@ -92,7 +94,8 @@ class FShaderTestPS : public FMyShaderTest
 	DECLARE_SHADER_TYPE(FShaderTestPS, Global);
 
 public:
-	FShaderTestPS() {}
+	FShaderTestPS() {
+	}
 
 	FShaderTestPS(const ShaderMetaType::CompiledShaderInitializerType& Initializer)
 		: FMyShaderTest(Initializer)
@@ -123,13 +126,16 @@ static void DrawTestShaderRenderTarget_RenderThread(
 #endif  
 
 	//设置渲染目标  
-	SetRenderTarget(
-		RHICmdList,
-		OutputRenderTargetResource->GetRenderTargetTexture(),
-		FTextureRHIRef(),
-		ESimpleRenderTargetMode::EUninitializedColorAndDepth,
-		FExclusiveDepthStencil::DepthNop_StencilNop
-	);
+	//SetRenderTarget(
+	//	RHICmdList,
+	//	OutputRenderTargetResource->GetRenderTargetTexture(),
+	//	FTextureRHIRef(),
+	//	ESimpleRenderTargetMode::EUninitializedColorAndDepth,
+	//	FExclusiveDepthStencil::DepthNop_StencilNop
+	//);
+
+	FRHIRenderPassInfo RPInfo(OutputRenderTargetResource->GetRenderTargetTexture(), ERenderTargetActions::DontLoad_Store, OutputRenderTargetResource->TextureRHI);
+	RHICmdList.BeginRenderPass(RPInfo, TEXT("DrawTestShader"));
 
 	//设置视口  
 	//FIntPoint DrawTargetResolution(OutputRenderTargetResource->GetSizeX(), OutputRenderTargetResource->GetSizeY());  
@@ -168,23 +174,53 @@ static void DrawTestShaderRenderTarget_RenderThread(
 		2, 1, 3
 	};
 	//DrawPrimitiveUP(RHICmdList, PT_TriangleStrip, 2, Vertices, sizeof(Vertices[0]));  
-	DrawIndexedPrimitiveUP(
-		RHICmdList,
-		PT_TriangleList,
-		0,
-		ARRAY_COUNT(Vertices),
-		2,
-		Indices,
-		sizeof(Indices[0]),
-		Vertices,
-		sizeof(Vertices[0])
-	);
+	//DrawIndexedPrimitiveUP(
+	//	RHICmdList,
+	//	PT_TriangleList,
+	//	0,
+	//	ARRAY_COUNT(Vertices),
+	//	2,
+	//	Indices,
+	//	sizeof(Indices[0]),
+	//	Vertices,
+	//	sizeof(Vertices[0])
+	//);
+	{
+		uint32 PrimitiveType = PT_TriangleList;
+		uint32 MinVertexIndex = 0;
+		uint32 NumVertices = ARRAY_COUNT(Vertices);
+		uint32 NumPrimitives = 2;
+		const void* IndexData = Indices;
+		uint32 IndexDataStride = sizeof(Indices[0]);
+		const void* VertexData = Vertices;
+		uint32 VertexDataStride = sizeof(Vertices[0]);
 
-	// Resolve render target.  
-	RHICmdList.CopyToResolveTarget(
-		OutputRenderTargetResource->GetRenderTargetTexture(),
-		OutputRenderTargetResource->TextureRHI,
-		FResolveParams());
+		const uint32 NumIndices = GetVertexCountForPrimitiveCount(NumPrimitives, PrimitiveType);
+
+		FRHIResourceCreateInfo CreateInfo;
+		FVertexBufferRHIRef VertexBufferRHI = RHICreateVertexBuffer(VertexDataStride * NumVertices, BUF_Volatile, CreateInfo);
+		void* VoidPtr = RHILockVertexBuffer(VertexBufferRHI, 0, VertexDataStride * NumVertices, RLM_WriteOnly);
+		FPlatformMemory::Memcpy(VoidPtr, VertexData, VertexDataStride * NumVertices);
+		RHIUnlockVertexBuffer(VertexBufferRHI);
+
+		FIndexBufferRHIRef IndexBufferRHI = RHICreateIndexBuffer(IndexDataStride, IndexDataStride * NumIndices, BUF_Volatile, CreateInfo);
+		void* VoidPtr2 = RHILockIndexBuffer(IndexBufferRHI, 0, IndexDataStride * NumIndices, RLM_WriteOnly);
+		FPlatformMemory::Memcpy(VoidPtr2, IndexData, IndexDataStride * NumIndices);
+		RHIUnlockIndexBuffer(IndexBufferRHI);
+
+		RHICmdList.SetStreamSource(0, VertexBufferRHI, 0);
+		RHICmdList.DrawIndexedPrimitive(IndexBufferRHI, MinVertexIndex, 0, NumVertices, 0, NumPrimitives, 1);
+
+		IndexBufferRHI.SafeRelease();
+		VertexBufferRHI.SafeRelease();
+	}
+
+	//// Resolve render target.  
+	//RHICmdList.CopyToResolveTarget(
+	//	OutputRenderTargetResource->GetRenderTargetTexture(),
+	//	OutputRenderTargetResource->TextureRHI,
+	//	FResolveParams());
+	RHICmdList.EndRenderPass();
 }
 
 void UTestShaderBlueprintLibrary::DrawTestShaderRenderTarget(
