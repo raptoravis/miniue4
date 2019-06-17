@@ -42,4 +42,11 @@ class UTestShaderBlueprintLibrary : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintCallable, Category = "ShaderTestPlugin", meta = (WorldContext = "WorldCongtextObject"))
 	void CopySurfaceToTexture(UTextureRenderTarget2D* OutRenderTarget);
+
+	UFUNCTION(BlueprintCallable, Category = "ShaderTestPlugin", meta = (WorldContext = "WorldContextObject"))
+	static void UseMyComputeShader(
+		class UTextureRenderTarget2D* OutputRenderTarget,
+		AActor* Ac,
+		FMyShaderStructData ShaderStructData
+	);
 };

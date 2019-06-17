@@ -142,9 +142,80 @@ public:
 	}
 };
 
+//***************************************************************************************//
+class FMyComputeShader : public FGlobalShader
+{
+	DECLARE_SHADER_TYPE(FMyComputeShader, Global);
+
+public:
+
+	FMyComputeShader() {
+	}
+
+	FMyComputeShader(const ShaderMetaType::CompiledShaderInitializerType& Initializer)
+		:FGlobalShader(Initializer)
+	{
+		OutputSurface.Bind(Initializer.ParameterMap, TEXT("OutputSurface"));
+	}
+
+	static bool ShouldCache(EShaderPlatform Platform)
+	{
+		return IsFeatureLevelSupported(Platform, ERHIFeatureLevel::SM5);
+	}
+
+	static bool ShouldCompilePermutation(const FGlobalShaderPermutationParameters& Parameters)
+	{
+		return IsFeatureLevelSupported(Parameters.Platform, ERHIFeatureLevel::SM5);
+		//return true;
+	}
+
+	static void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& Platform, FShaderCompilerEnvironment& OutEnvironment)
+	{
+		FGlobalShader::ModifyCompilationEnvironment(Platform, OutEnvironment);
+		OutEnvironment.CompilerFlags.Add(CFLAG_StandardOptimization);
+	}
+
+	virtual bool Serialize(FArchive& Ar) override
+	{
+		bool bShaderHasOutdatedParams = FGlobalShader::Serialize(Ar);
+
+		Ar << OutputSurface;
+
+		return bShaderHasOutdatedParams;
+	}
+
+	void SetSurfaces(FRHICommandList& RHICmdList, FUnorderedAccessViewRHIRef OutputSurfaceUAV, FMyShaderStructData& ShaderStructData)
+	{
+		FComputeShaderRHIParamRef ComputeShaderRHI = GetComputeShader();
+		if (OutputSurface.IsBound())
+			RHICmdList.SetUAVParameter(ComputeShaderRHI, OutputSurface.GetBaseIndex(), OutputSurfaceUAV);
+
+		FMyUniformStructData UniformData;
+		UniformData.ColorOne = ShaderStructData.ColorOne;
+		UniformData.ColorTwo = ShaderStructData.ColorTwo;
+		UniformData.ColorThree = ShaderStructData.Colorthree;
+		UniformData.ColorFour = ShaderStructData.ColorFour;
+		UniformData.ColorIndex = ShaderStructData.ColorIndex;
+
+		SetUniformBufferParameterImmediate(RHICmdList, GetComputeShader(), GetUniformBufferParameter<FMyUniformStructData>(), UniformData);
+
+	}
+
+	void UnbindBuffers(FRHICommandList& RHICmdList)
+	{
+		FComputeShaderRHIParamRef ComputeShaderRHI = GetComputeShader();
+
+		if (OutputSurface.IsBound())
+			RHICmdList.SetUAVParameter(ComputeShaderRHI, OutputSurface.GetBaseIndex(), FUnorderedAccessViewRHIRef());
+	}
+
+private:
+	FShaderResourceParameter OutputSurface;
+};
 
 IMPLEMENT_SHADER_TYPE(, FShaderTestVS, TEXT("/Plugin/ShadertestPlugin/Private/MyShader.usf"), TEXT("MainVS"), SF_Vertex)
 IMPLEMENT_SHADER_TYPE(, FShaderTestPS, TEXT("/Plugin/ShadertestPlugin/Private/MyShader.usf"), TEXT("MainPS"), SF_Pixel)
+IMPLEMENT_SHADER_TYPE(, FMyComputeShader, TEXT("/Plugin/ShadertestPlugin/Private/MyShader.usf"), TEXT("MainCS"), SF_Compute)
 
 struct FMyTextureVertex
 {
@@ -471,13 +542,13 @@ void UTestShaderBlueprintLibrary::TextureWriting(UTexture2D* TextureToBeWrite, A
 
 }
 
-class FMyComputeShader : public FGlobalShader
+class FMyComputeShaderTest : public FGlobalShader
 {
 public:
 
-	FMyComputeShader() {}
+	FMyComputeShaderTest() {}
 
-	FMyComputeShader(const ShaderMetaType::CompiledShaderInitializerType& Initializer)
+	FMyComputeShaderTest(const ShaderMetaType::CompiledShaderInitializerType& Initializer)
 		: FGlobalShader(Initializer)
 	{
 		OutputSurface.Bind(Initializer.ParameterMap, TEXT("OutputSurface"));
@@ -543,7 +614,7 @@ void UTestShaderBlueprintLibrary::CopySurfaceToTexture(UTextureRenderTarget2D* O
 	FTexture2DRHIRef Texture = RHICreateTexture2D(SizeX, SizeY, PF_A32B32G32R32F, 1, 1, TexCreate_ShaderResource | TexCreate_UAV, CreateInfo);
 	FUnorderedAccessViewRHIParamRef TextureUAV = RHICreateUnorderedAccessView(Texture);
 
-	FMyComputeShader* ComputeShader = (FMyComputeShader*)0;
+	FMyComputeShaderTest* ComputeShader = (FMyComputeShaderTest*)0;
 	ComputeShader->SetSurfaces(RHICmdList, TextureUAV);
 	DispatchComputeShader(RHICmdList, ComputeShader, SizeX / 32, SizeY / 32, 1);
 	ComputeShader->UnbindBuffers(RHICmdList);
@@ -561,4 +632,124 @@ void UTestShaderBlueprintLibrary::CopySurfaceToTexture(UTextureRenderTarget2D* O
 	RHICmdList.CopyTexture(Texture, RTTexture, copyInfo);
 
 }
+
+
+/*****************************************************/
+
+static void UseComputeShader_RenderThread(
+	FRHICommandListImmediate& RHICmdList,
+	FTextureRenderTargetResource* OutputRenderTargetResource,
+	FName TextureRenderTargetName, 
+	FMyShaderStructData ShaderStructData,
+	ERHIFeatureLevel::Type FeatureLevel
+)
+{
+	check(IsInRenderingThread());
+
+	TShaderMapRef<FMyComputeShader> ComputeShader(GetGlobalShaderMap(FeatureLevel));
+	RHICmdList.SetComputeShader(ComputeShader->GetComputeShader());
+
+	//ComputeShader->SetSurfaces(RHICmdList,)
+	int32 SizeX = OutputRenderTargetResource->GetSizeX();
+	int32 SizeY = OutputRenderTargetResource->GetSizeY();
+	FRHIResourceCreateInfo CreateInfo;
+
+	FTexture2DRHIRef Texture = RHICreateTexture2D(SizeX, SizeY, PF_A32B32G32R32F, 1, 1, TexCreate_ShaderResource | TexCreate_UAV, CreateInfo);
+	FUnorderedAccessViewRHIRef TextureUAV = RHICreateUnorderedAccessView(Texture);
+	ComputeShader->SetSurfaces(RHICmdList, TextureUAV, ShaderStructData);
+	DispatchComputeShader(RHICmdList, *ComputeShader, SizeX / 32, SizeY / 32, 1);
+	ComputeShader->UnbindBuffers(RHICmdList);
+
+	DrawTestShaderRenderTarget_RenderThread(RHICmdList, OutputRenderTargetResource, FeatureLevel, 
+		TextureRenderTargetName, FLinearColor(), Texture, ShaderStructData);
+
+	/*
+	//create a bitmap
+	TArray<FColor> Bitmap;
+
+	//To access our resource we do a custom read using lockrect
+	uint32 LolStride = 0;
+	char* TextureDataPtr = (char*)RHICmdList.LockTexture2D(Texture, 0, EResourceLockMode::RLM_ReadOnly, LolStride, false);
+
+	for (uint32 Row = 0; Row < Texture->GetSizeY(); ++Row)
+	{
+		uint32* PixelPtr = (uint32*)TextureDataPtr;
+
+		//Since we are using our custom UINT format, we need to unpack it here to access the actual colors
+		for (uint32 Col = 0; Col < Texture->GetSizeX(); ++Col)
+		{
+			uint32 EncodedPixel = *PixelPtr;
+			uint8 r = (EncodedPixel & 0x000000FF);
+			uint8 g = (EncodedPixel & 0x0000FF00) >> 8;
+			uint8 b = (EncodedPixel & 0x00FF0000) >> 16;
+			uint8 a = (EncodedPixel & 0xFF000000) >> 24;
+			Bitmap.Add(FColor(r, g, b, a));
+
+			PixelPtr++;
+		}
+
+		// move to next row:
+		TextureDataPtr += LolStride;
+	}
+
+	RHICmdList.UnlockTexture2D(Texture, 0, false);
+
+	// if the format and texture type is supported
+	if (Bitmap.Num())
+	{
+		// Create screenshot folder if not already present.
+		IFileManager::Get().MakeDirectory(*FPaths::ScreenShotDir(), true);
+
+		const FString ScreenFileName(FPaths::ScreenShotDir() / TEXT("VisualizeTexture"));
+
+		uint32 ExtendXWithMSAA = Bitmap.Num() / Texture->GetSizeY();
+
+		// Save the contents of the array to a bitmap file. (24bit only so alpha channel is dropped)
+		FFileHelper::CreateBitmap(*ScreenFileName, ExtendXWithMSAA, Texture->GetSizeY(), Bitmap.GetData());
+
+		UE_LOG(LogConsoleResponse, Display, TEXT("Content was saved to \"%s\""), *FPaths::ScreenShotDir());
+	}
+	else
+	{
+		UE_LOG(LogConsoleResponse, Error, TEXT("Failed to save BMP, format or texture type is not supported"));
+	}
+
+	*/
+}
+
+
+void UTestShaderBlueprintLibrary::UseMyComputeShader(
+	class UTextureRenderTarget2D* OutputRenderTarget,
+	AActor* Ac,
+	FMyShaderStructData ShaderStructData
+)
+{
+	check(IsInGameThread());
+
+	if (Ac == nullptr && OutputRenderTarget == nullptr)
+	{
+		return;
+	}
+
+	FTextureRenderTargetResource* TextureRenderTargetResource = OutputRenderTarget->GameThread_GetRenderTargetResource();
+	UWorld* World = Ac->GetWorld();
+	ERHIFeatureLevel::Type FeatureLevel = World->Scene->GetFeatureLevel();
+	FName TextureRenderTargetName = OutputRenderTarget->GetFName();
+
+	ENQUEUE_RENDER_COMMAND(CaptureCommand)(
+		[TextureRenderTargetResource, TextureRenderTargetName, FeatureLevel, ShaderStructData](FRHICommandListImmediate& RHICmdList)
+		{
+			UseComputeShader_RenderThread
+			(
+				RHICmdList,
+				TextureRenderTargetResource,
+				TextureRenderTargetName, 
+				ShaderStructData,
+				FeatureLevel
+			);
+		});
+
+}
+
+
 #undef LOCTEXT_NAMESPACE  
