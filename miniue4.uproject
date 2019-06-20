@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{7A733A93-4677-34D5-078A-3D9FC00FA712}",
+	"EngineAssociation": "{CB835D75-4281-3DE1-3901-47AAA34305C0}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -11,6 +11,12 @@
 			"AdditionalDependencies": [
 				"Engine"
 			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "RenderDocPlugin",
+			"Enabled": true
 		}
 	]
 }
