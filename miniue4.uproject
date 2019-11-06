@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{CB835D75-4281-3DE1-3901-47AAA34305C0}",
+	"EngineAssociation": "{AD64D6C9-4070-8993-231E-A5BE26421D5A}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -17,6 +17,11 @@
 		{
 			"Name": "RenderDocPlugin",
 			"Enabled": true
+		},
+		{
+			"Name": "OptickPlugin",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/95c078f6fa924b2b82fd8f281e04850f"
 		}
 	]
 }
