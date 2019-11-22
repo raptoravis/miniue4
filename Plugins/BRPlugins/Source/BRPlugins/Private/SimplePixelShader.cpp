@@ -469,8 +469,7 @@ void USimplePixelShaderBlueprintLibrary::UseComputeShader(const UObject* WorldCo
 	ERHIFeatureLevel::Type FeatureLevel = World->Scene->GetFeatureLevel();
 
 	ENQUEUE_RENDER_COMMAND(CaptureCommand)(
-		[TextureRenderTargetResource, FeatureLevel, UniformStruct](FRHICommandListImmediate& RHICmdList)
-	{
+		[TextureRenderTargetResource, FeatureLevel, UniformStruct](FRHICommandListImmediate& RHICmdList) {
 		UseComputeShader_RenderThread
 		(
 			RHICmdList,
