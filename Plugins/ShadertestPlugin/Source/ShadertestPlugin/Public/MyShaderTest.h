@@ -12,41 +12,34 @@ struct FMyShaderStructData
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = ShaderData)
-		FLinearColor ColorOne;
+	FLinearColor ColorOne;
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = ShaderData)
-		FLinearColor ColorTwo;
+	FLinearColor ColorTwo;
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = ShaderData)
-		FLinearColor Colorthree;
+	FLinearColor Colorthree;
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = ShaderData)
-		FLinearColor ColorFour;
+	FLinearColor ColorFour;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = ShaderData)
-		int32 ColorIndex;
+	int32 ColorIndex;
 };
 
-
-UCLASS(MinimalAPI, meta=(ScriptName="TestShaderLibrary"))
+UCLASS(MinimalAPI, meta = (ScriptName = "TestShaderLibrary"))
 class UTestShaderBlueprintLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
-	UFUNCTION(BlueprintCallable, Category="ShaderTestPlugin", meta=(WorldContext="WorldCongtextObject"))
-	static void DrawTestShaderRenderTarget(class UTextureRenderTarget2D* OutputRenderTarget, 
-		AActor* Ac, FLinearColor MyColor, 
+	UFUNCTION(BlueprintCallable, Category = "ShaderTestPlugin", meta = (WorldContext = "WorldCongtextObject"))
+	static void DrawTestShaderRenderTarget(class UTextureRenderTarget2D* OutputRenderTarget, AActor* Ac, FLinearColor MyColor,
 		UTexture* MyTexture, FMyShaderStructData ShaderStructData);
-
 
 	UFUNCTION(BlueprintCallable, Category = "ShaderTestPlugin", meta = (WorldContext = "WorldCongtextObject"))
 	static void TextureWriting(UTexture2D* TextureToBeWrite, AActor* selfref);
-
 
 	UFUNCTION(BlueprintCallable, Category = "ShaderTestPlugin", meta = (WorldContext = "WorldCongtextObject"))
 	void CopySurfaceToTexture(UTextureRenderTarget2D* OutRenderTarget);
 
 	UFUNCTION(BlueprintCallable, Category = "ShaderTestPlugin", meta = (WorldContext = "WorldContextObject"))
 	static void UseMyComputeShader(
-		class UTextureRenderTarget2D* OutputRenderTarget,
-		AActor* Ac,
-		FMyShaderStructData ShaderStructData
-	);
+		class UTextureRenderTarget2D* OutputRenderTarget, AActor* Ac, FMyShaderStructData ShaderStructData);
 };

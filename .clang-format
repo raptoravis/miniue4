@@ -80,7 +80,7 @@ RawStringFormats:
   - Language:        Cpp
     BasedOnStyle:    google
 ReflowComments:  true
-SortIncludes:    true
+SortIncludes:    false
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: true
 SpaceAfterTemplateKeyword: true

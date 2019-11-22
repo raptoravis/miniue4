@@ -3,9 +3,9 @@
 
 static bool GUseShadowIndexBuffer = true;
 
-FStrokeStaticMeshSceneProxy::FStrokeStaticMeshSceneProxy(UStaticMeshComponent* Component, bool bForceLODsShareStaticLighting):FStaticMeshSceneProxy(Component,bForceLODsShareStaticLighting),ComponentPtr(Component)
+FStrokeStaticMeshSceneProxy::FStrokeStaticMeshSceneProxy(UStaticMeshComponent* Component, bool bForceLODsShareStaticLighting)
+	: FStaticMeshSceneProxy(Component, bForceLODsShareStaticLighting), ComponentPtr(Component)
 {
-	
 }
 
 // use for render thread only
@@ -27,7 +27,8 @@ bool UseLightPropagationVolumeRT2(ERHIFeatureLevel::Type InFeatureLevel)
 
 inline bool AllowShadowOnlyMesh(ERHIFeatureLevel::Type InFeatureLevel)
 {
-	// todo: later we should refine that (only if occlusion feature in LPV is on, only if inside a cascade, if shadow casting is disabled it should look at bUseEmissiveForDynamicAreaLighting)
+	// todo: later we should refine that (only if occlusion feature in LPV is on, only if inside a cascade, if shadow casting is
+	// disabled it should look at bUseEmissiveForDynamicAreaLighting)
 	return !UseLightPropagationVolumeRT2(InFeatureLevel);
 }
 
@@ -39,11 +40,11 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 		// Determine the DPG the primitive should be drawn in.
 		uint8 PrimitiveDPG = GetStaticDepthPriorityGroup();
 		int32 NumLODs = RenderData->LODResources.Num();
-		//Never use the dynamic path in this path, because only unselected elements will use DrawStaticElements
+		// Never use the dynamic path in this path, because only unselected elements will use DrawStaticElements
 		bool bIsMeshElementSelected = false;
 		const auto FeatureLevel = GetScene().GetFeatureLevel();
 
-		//check if a LOD is being forced
+		// check if a LOD is being forced
 		if (ForcedLodModel > 0)
 		{
 			int32 LODIndex = FMath::Clamp(ForcedLodModel, ClampedMinLOD + 1, NumLODs) - 1;
@@ -59,7 +60,7 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 					bIsMeshElementSelected = Section.bSelected;
 					PDI->SetHitProxy(Section.HitProxy);
 				}
-#endif // WITH_EDITOR
+#endif	// WITH_EDITOR
 
 				const int32 NumBatches = GetNumMeshBatches();
 
@@ -76,13 +77,16 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 						const FLODInfo& ProxyLODInfo = LODs[LODIndex];
 						UMaterialInterface* MaterialInterface = ProxyLODInfo.Sections[SectionIndex].Material;
 
-						const UStrokeStaticMeshComponent* StrokeStaticMeshComponent = dynamic_cast<const UStrokeStaticMeshComponent *>(ComponentPtr);
+						const UStrokeStaticMeshComponent* StrokeStaticMeshComponent =
+							dynamic_cast<const UStrokeStaticMeshComponent*>(ComponentPtr);
 						if (MaterialInterface == StrokeStaticMeshComponent->SecondPassMaterial)
 						{
 							continue;
 						}
-						if (StrokeStaticMeshComponent->NeedSecondPass) {
-							if (StrokeStaticMeshComponent->SecondPassMaterial == nullptr) {
+						if (StrokeStaticMeshComponent->NeedSecondPass)
+						{
+							if (StrokeStaticMeshComponent->SecondPassMaterial == nullptr)
+							{
 								continue;
 							}
 							MeshBatch.MaterialRenderProxy = StrokeStaticMeshComponent->SecondPassMaterial->GetRenderProxy();
@@ -93,7 +97,7 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 				}
 			}
 		}
-		else //no LOD is being forced, submit them all with appropriate cull distances
+		else	// no LOD is being forced, submit them all with appropriate cull distances
 		{
 			for (int32 LODIndex = ClampedMinLOD; LODIndex < NumLODs; LODIndex++)
 			{
@@ -107,8 +111,8 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 				{
 					const FLODInfo& ProxyLODInfo = LODs[LODIndex];
 
-					// The shadow-only mesh can be used only if all elements cast shadows and use opaque materials with no vertex modification.
-					// In some cases (e.g. LPV) we don't want the optimization
+					// The shadow-only mesh can be used only if all elements cast shadows and use opaque materials with no vertex
+					// modification. In some cases (e.g. LPV) we don't want the optimization
 					bool bSafeToUseUnifiedMesh = AllowShadowOnlyMesh(FeatureLevel);
 
 					bool bAnySectionUsesDitheredLODTransition = false;
@@ -118,19 +122,21 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 
 					for (int32 SectionIndex = 0; bSafeToUseUnifiedMesh && SectionIndex < LODModel.Sections.Num(); SectionIndex++)
 					{
-						const FMaterial* Material = ProxyLODInfo.Sections[SectionIndex].Material->GetRenderProxy()->GetMaterial(FeatureLevel);
+						const FMaterial* Material =
+							ProxyLODInfo.Sections[SectionIndex].Material->GetRenderProxy()->GetMaterial(FeatureLevel);
 						// no support for stateless dithered LOD transitions for movable meshes
-						bAnySectionUsesDitheredLODTransition = bAnySectionUsesDitheredLODTransition || (!bIsMovable && Material->IsDitheredLODTransition());
-						bAllSectionsUseDitheredLODTransition = bAllSectionsUseDitheredLODTransition && (!bIsMovable && Material->IsDitheredLODTransition());
+						bAnySectionUsesDitheredLODTransition =
+							bAnySectionUsesDitheredLODTransition || (!bIsMovable && Material->IsDitheredLODTransition());
+						bAllSectionsUseDitheredLODTransition =
+							bAllSectionsUseDitheredLODTransition && (!bIsMovable && Material->IsDitheredLODTransition());
 						const FStaticMeshSection& Section = LODModel.Sections[SectionIndex];
 
 						bSafeToUseUnifiedMesh =
-							!(bAnySectionUsesDitheredLODTransition && !bAllSectionsUseDitheredLODTransition) // can't use a single section if they are not homogeneous
-							&& Material->WritesEveryPixel()
-							&& !Material->IsTwoSided()
-							&& !IsTranslucentBlendMode(Material->GetBlendMode())
-							&& !Material->MaterialModifiesMeshPosition_RenderThread()
-							&& Material->GetMaterialDomain() == MD_Surface;
+							!(bAnySectionUsesDitheredLODTransition &&
+								!bAllSectionsUseDitheredLODTransition)	// can't use a single section if they are not homogeneous
+							&& Material->WritesEveryPixel() && !Material->IsTwoSided() &&
+							!IsTranslucentBlendMode(Material->GetBlendMode()) &&
+							!Material->MaterialModifiesMeshPosition_RenderThread() && Material->GetMaterialDomain() == MD_Surface;
 
 						bAllSectionsCastShadow &= Section.bCastShadow;
 					}
@@ -139,8 +145,10 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 					{
 						bUseUnifiedMeshForShadow = bAllSectionsCastShadow;
 
-						// Depth pass is only used for deferred renderer. The other conditions are meant to match the logic in FDepthPassMeshProcessor::AddMeshBatch.
-						bUseUnifiedMeshForDepth = ShouldUseAsOccluder() && GetScene().GetShadingPath() == EShadingPath::Deferred && !IsMovable();
+						// Depth pass is only used for deferred renderer. The other conditions are meant to match the logic in
+						// FDepthPassMeshProcessor::AddMeshBatch.
+						bUseUnifiedMeshForDepth =
+							ShouldUseAsOccluder() && GetScene().GetShadingPath() == EShadingPath::Deferred && !IsMovable();
 
 						if (bUseUnifiedMeshForShadow || bUseUnifiedMeshForDepth)
 						{
@@ -152,7 +160,8 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 							{
 								FMeshBatch MeshBatch;
 
-								if (GetShadowMeshElement(LODIndex, BatchIndex, PrimitiveDPG, MeshBatch, bAllSectionsUseDitheredLODTransition))
+								if (GetShadowMeshElement(
+										LODIndex, BatchIndex, PrimitiveDPG, MeshBatch, bAllSectionsUseDitheredLODTransition))
 								{
 									bUseUnifiedMeshForShadow = bAllSectionsCastShadow;
 
@@ -166,16 +175,20 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 									const FLODInfo& ProxyLODInfo = LODs[LODIndex];
 									UMaterialInterface* MaterialInterface = ProxyLODInfo.Sections[0].Material;
 
-									const UStrokeStaticMeshComponent* StrokeStaticMeshComponent = dynamic_cast<const UStrokeStaticMeshComponent *>(ComponentPtr);
+									const UStrokeStaticMeshComponent* StrokeStaticMeshComponent =
+										dynamic_cast<const UStrokeStaticMeshComponent*>(ComponentPtr);
 									if (MaterialInterface == StrokeStaticMeshComponent->SecondPassMaterial)
 									{
 										continue;
 									}
-									if (StrokeStaticMeshComponent->NeedSecondPass) {
-										if (StrokeStaticMeshComponent->SecondPassMaterial == nullptr) {
+									if (StrokeStaticMeshComponent->NeedSecondPass)
+									{
+										if (StrokeStaticMeshComponent->SecondPassMaterial == nullptr)
+										{
 											continue;
 										}
-										MeshBatch.MaterialRenderProxy = StrokeStaticMeshComponent->SecondPassMaterial->GetRenderProxy();
+										MeshBatch.MaterialRenderProxy =
+											StrokeStaticMeshComponent->SecondPassMaterial->GetRenderProxy();
 										MeshBatch.ReverseCulling = true;
 										PDI->DrawMesh(MeshBatch, FLT_MAX);
 									}
@@ -196,7 +209,7 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 						bIsMeshElementSelected = Section.bSelected;
 						PDI->SetHitProxy(Section.HitProxy);
 					}
-#endif // WITH_EDITOR
+#endif	// WITH_EDITOR
 
 					const int32 NumBatches = GetNumMeshBatches();
 
@@ -206,7 +219,8 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 					{
 						FMeshBatch MeshBatch;
 
-						if (GetMeshElement(LODIndex, BatchIndex, SectionIndex, PrimitiveDPG, bIsMeshElementSelected, true, MeshBatch))
+						if (GetMeshElement(
+								LODIndex, BatchIndex, SectionIndex, PrimitiveDPG, bIsMeshElementSelected, true, MeshBatch))
 						{
 							// If we have submitted an optimized shadow-only mesh, remaining mesh elements must not cast shadows.
 							MeshBatch.CastShadow &= !bUseUnifiedMeshForShadow;
@@ -218,13 +232,16 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 							const FLODInfo& ProxyLODInfo = LODs[LODIndex];
 							UMaterialInterface* MaterialInterface = ProxyLODInfo.Sections[SectionIndex].Material;
 
-							const UStrokeStaticMeshComponent* StrokeStaticMeshComponent = dynamic_cast<const UStrokeStaticMeshComponent *>(ComponentPtr);
+							const UStrokeStaticMeshComponent* StrokeStaticMeshComponent =
+								dynamic_cast<const UStrokeStaticMeshComponent*>(ComponentPtr);
 							if (MaterialInterface == StrokeStaticMeshComponent->SecondPassMaterial)
 							{
 								continue;
 							}
-							if (StrokeStaticMeshComponent->NeedSecondPass) {
-								if (StrokeStaticMeshComponent->SecondPassMaterial == nullptr) {
+							if (StrokeStaticMeshComponent->NeedSecondPass)
+							{
+								if (StrokeStaticMeshComponent->SecondPassMaterial == nullptr)
+								{
 									continue;
 								}
 								MeshBatch.MaterialRenderProxy = StrokeStaticMeshComponent->SecondPassMaterial->GetRenderProxy();
@@ -240,5 +257,3 @@ void FStrokeStaticMeshSceneProxy::DrawStaticElements(FStaticPrimitiveDrawInterfa
 }
 
 #undef LOCTEXT_NAMESPACE
-
-

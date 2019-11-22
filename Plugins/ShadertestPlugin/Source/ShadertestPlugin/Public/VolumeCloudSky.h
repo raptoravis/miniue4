@@ -16,21 +16,16 @@ class AVolumetricClouds : public AActor
 	GENERATED_BODY()
 
 public:
-
-	AVolumetricClouds() {}
+	AVolumetricClouds()
+	{
+	}
 
 	UFUNCTION(BlueprintCallable, Category = "VolumeCloud")
-		void RenderCloud(UTextureRenderTarget2D* RenderTarget);
+	void RenderCloud(UTextureRenderTarget2D* RenderTarget);
 
 private:
-
-	void RenderCloud_RenderThread(
-		FRHICommandListImmediate& RHICmdList,
-		ERHIFeatureLevel::Type FeatureLevel,
-		FRHITexture* RenderTarget,
-		int32 SizeX,
-		int32 SizeY
-	);
+	void RenderCloud_RenderThread(FRHICommandListImmediate& RHICmdList, ERHIFeatureLevel::Type FeatureLevel,
+		FRHITexture* RenderTarget, int32 SizeX, int32 SizeY);
 
 	FTexture2DRHIRef Texture;
 	FUnorderedAccessViewRHIRef TextureUAV;
@@ -39,5 +34,4 @@ private:
 	FUnorderedAccessViewRHIRef TestStructureBuffUAV;
 
 	bool RenderCloud_RenderThread_Init;
-
 };

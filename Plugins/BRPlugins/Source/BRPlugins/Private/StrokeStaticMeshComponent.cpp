@@ -4,13 +4,12 @@
 #include "Engine/Public/SkeletalRenderPublic.h"
 #define LOCTEXT_NAMESPACE "StrokeSkeletalMeshComponent"
 
-UStrokeStaticMeshComponent::UStrokeStaticMeshComponent(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+UStrokeStaticMeshComponent::UStrokeStaticMeshComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-
 }
 
-void UStrokeStaticMeshComponent::GetUsedMaterials(TArray<UMaterialInterface*>& OutMaterials, bool bGetDebugMaterials /*= false*/) const
+void UStrokeStaticMeshComponent::GetUsedMaterials(
+	TArray<UMaterialInterface*>& OutMaterials, bool bGetDebugMaterials /*= false*/) const
 {
 	if (GetStaticMesh() && GetStaticMesh()->RenderData)
 	{
@@ -35,7 +34,7 @@ void UStrokeStaticMeshComponent::GetUsedMaterials(TArray<UMaterialInterface*>& O
 				bool NeedAddMaterial = true;
 				for (int i = 0; i < MapOfMaterials.Num(); ++i)
 				{
-					if (MapOfMaterials[i]== SecondPassMaterial)
+					if (MapOfMaterials[i] == SecondPassMaterial)
 					{
 						NeedAddMaterial = false;
 					}
@@ -48,15 +47,15 @@ void UStrokeStaticMeshComponent::GetUsedMaterials(TArray<UMaterialInterface*>& O
 		}
 		if (MapOfMaterials.Num() > 0)
 		{
-			//We need to output the material in the correct order (follow the material index)
-			//So we sort the map with the material index
+			// We need to output the material in the correct order (follow the material index)
+			// So we sort the map with the material index
 			MapOfMaterials.KeySort([](int32 A, int32 B) {
-				return A < B; // sort keys in order
+				return A < B;	// sort keys in order
 			});
 
-			//Preadd all the material item in the array
+			// Preadd all the material item in the array
 			OutMaterials.AddZeroed(MapOfMaterials.Num());
-			//Set the value in the correct order
+			// Set the value in the correct order
 			int32 MaterialIndex = 0;
 			for (auto Kvp : MapOfMaterials)
 			{
@@ -74,7 +73,8 @@ FPrimitiveSceneProxy* UStrokeStaticMeshComponent::CreateSceneProxy()
 	}
 
 	const TIndirectArray<FStaticMeshLODResources>& LODResources = GetStaticMesh()->RenderData->LODResources;
-	if (LODResources.Num() == 0 || LODResources[FMath::Clamp<int32>(GetStaticMesh()->MinLOD.Default, 0, LODResources.Num() - 1)].VertexBuffers.StaticMeshVertexBuffer.GetNumVertices() == 0)
+	if (LODResources.Num() == 0 || LODResources[FMath::Clamp<int32>(GetStaticMesh()->MinLOD.Default, 0, LODResources.Num() - 1)]
+										   .VertexBuffers.StaticMeshVertexBuffer.GetNumVertices() == 0)
 	{
 		return nullptr;
 	}

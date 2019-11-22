@@ -21,5 +21,5 @@ void FBRPluginsModule::ShutdownModule()
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FBRPluginsModule, BRPlugins)

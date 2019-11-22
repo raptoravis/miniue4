@@ -22,16 +22,15 @@
 
 class FVolumeCSShader : public FGlobalShader
 {
-
 	DECLARE_SHADER_TYPE(FVolumeCSShader, Global)
 
 public:
-
-	FVolumeCSShader() {}
-	FVolumeCSShader(const ShaderMetaType::CompiledShaderInitializerType& Initializer)
-		: FGlobalShader(Initializer)
+	FVolumeCSShader()
 	{
-		//TODO Bind pramerter here
+	}
+	FVolumeCSShader(const ShaderMetaType::CompiledShaderInitializerType& Initializer) : FGlobalShader(Initializer)
+	{
+		// TODO Bind pramerter here
 		CloudOutputSurface.Bind(Initializer.ParameterMap, TEXT("CloudOutputSurface"));
 		TestStructureBufferSurface.Bind(Initializer.ParameterMap, TEXT("TestStructureBuffer"));
 	}
@@ -46,20 +45,19 @@ public:
 		return IsFeatureLevelSupported(Parameters.Platform, ERHIFeatureLevel::SM5);
 	}
 	//----------------------------------------------------//
-	static void ModifyCompilationEnvironment(const FGlobalShaderPermutationParameters& Parameters, FShaderCompilerEnvironment& OutEnvironment)
+	static void ModifyCompilationEnvironment(
+		const FGlobalShaderPermutationParameters& Parameters, FShaderCompilerEnvironment& OutEnvironment)
 	{
 		FGlobalShader::ModifyCompilationEnvironment(Parameters, OutEnvironment);
-		//Define micro here
-		//OutEnvironment.SetDefine(TEXT("TEST_MICRO"), 1);
+		// Define micro here
+		// OutEnvironment.SetDefine(TEXT("TEST_MICRO"), 1);
 	}
 	//----------------------------------------------------//
 
-	void SetSurface(FRHICommandList& RHICmdList,
-		FUnorderedAccessViewRHIRef& OutputSurfaceUAV,
-		FUnorderedAccessViewRHIRef& TestStructrueBuffUAV
-	)
+	void SetSurface(
+		FRHICommandList& RHICmdList, FUnorderedAccessViewRHIRef& OutputSurfaceUAV, FUnorderedAccessViewRHIRef& TestStructrueBuffUAV)
 	{
-		//set the UAV
+		// set the UAV
 		FComputeShaderRHIParamRef ComputeShaderRHI = GetComputeShader();
 		if (CloudOutputSurface.IsBound())
 			RHICmdList.SetUAVParameter(ComputeShaderRHI, CloudOutputSurface.GetBaseIndex(), OutputSurfaceUAV);
@@ -80,13 +78,12 @@ public:
 	virtual bool Serialize(FArchive& Ar) override
 	{
 		bool bShaderHasOutdatedParameters = FGlobalShader::Serialize(Ar);
-		//Serrilize something here
+		// Serrilize something here
 		Ar << CloudOutputSurface << TestStructureBufferSurface;
 		return bShaderHasOutdatedParameters;
 	}
 
 private:
-
 	FShaderResourceParameter CloudOutputSurface;
 	FShaderResourceParameter TestStructureBufferSurface;
 };
@@ -94,20 +91,15 @@ private:
 IMPLEMENT_SHADER_TYPE(, FVolumeCSShader, TEXT("/Plugin/ShadertestPlugin/Private/VolumeCloudSky.usf"), TEXT("MainCS"), SF_Compute)
 
 void AVolumetricClouds::RenderCloud_RenderThread(
-	FRHICommandListImmediate& RHICmdList,
-	ERHIFeatureLevel::Type FeatureLevel,
-	FRHITexture* RenderTarget,
-	int32 SizeX,
-	int32 SizeY
-)
+	FRHICommandListImmediate& RHICmdList, ERHIFeatureLevel::Type FeatureLevel, FRHITexture* RenderTarget, int32 SizeX, int32 SizeY)
 {
 	check(IsInRenderingThread());
 	check(RenderTarget != nullptr);
 
-	TShaderMapRef<FVolumeCSShader>VolumetricCloudComputeShader(GetGlobalShaderMap(FeatureLevel));
+	TShaderMapRef<FVolumeCSShader> VolumetricCloudComputeShader(GetGlobalShaderMap(FeatureLevel));
 	RHICmdList.SetComputeShader(VolumetricCloudComputeShader->GetComputeShader());
 
-	//Init
+	// Init
 	if (RenderCloud_RenderThread_Init == false || Texture.IsValid() == false || TextureUAV.IsValid() == false)
 	{
 		FRHIResourceCreateInfo CreateInfo;
@@ -125,7 +117,8 @@ void AVolumetricClouds::RenderCloud_RenderThread(
 		FRHIResourceCreateInfo TestcreateInfo;
 		TestcreateInfo.ResourceArray = &bufferData;
 
-		TestStructureBuff = RHICreateStructuredBuffer(sizeof(TestStruct), sizeof(TestStruct) * 1, BUF_UnorderedAccess | BUF_ShaderResource, TestcreateInfo);
+		TestStructureBuff = RHICreateStructuredBuffer(
+			sizeof(TestStruct), sizeof(TestStruct) * 1, BUF_UnorderedAccess | BUF_ShaderResource, TestcreateInfo);
 		TestStructureBuffUAV = RHICreateUnorderedAccessView(TestStructureBuff, true, false);
 
 		//*******************************************************//
@@ -148,7 +141,8 @@ void AVolumetricClouds::RenderCloud_RenderThread(
 	FVector TestEle(1.0f, 1.0f, 1.0f);
 	Data.Add(TestEle);
 
-	FVector* srcptr = (FVector*)RHILockStructuredBuffer(TestStructureBuff.GetReference(), 0, sizeof(FVector), EResourceLockMode::RLM_ReadOnly);
+	FVector* srcptr =
+		(FVector*) RHILockStructuredBuffer(TestStructureBuff.GetReference(), 0, sizeof(FVector), EResourceLockMode::RLM_ReadOnly);
 	FMemory::Memcpy(Data.GetData(), srcptr, sizeof(FVector));
 	RHIUnlockStructuredBuffer(TestStructureBuff.GetReference());
 }
@@ -167,19 +161,9 @@ void AVolumetricClouds::RenderCloud(UTextureRenderTarget2D* RenderTarget)
 	int32 SizeY = RenderTarget->SizeY;
 
 	ENQUEUE_RENDER_COMMAND(VolumeCloudsRenderCommand)
-		(
-			[FeatureLevel, RenderTargetTextureRef, SizeX, SizeY, this](FRHICommandListImmediate& RHICmdList)
-			{
-				RenderCloud_RenderThread
-				(
-					RHICmdList,
-					FeatureLevel,
-					RenderTargetTextureRef,
-					SizeX,
-					SizeY
-				);
-			}
-	);
+	([FeatureLevel, RenderTargetTextureRef, SizeX, SizeY, this](FRHICommandListImmediate& RHICmdList) {
+		RenderCloud_RenderThread(RHICmdList, FeatureLevel, RenderTargetTextureRef, SizeX, SizeY);
+	});
 }
 
 #undef LOCTEXT_NAMESPACE

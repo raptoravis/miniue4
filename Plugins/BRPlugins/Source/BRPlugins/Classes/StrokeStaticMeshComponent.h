@@ -3,7 +3,7 @@
 #include "Engine/Classes/Components/StaticMeshComponent.h"
 #include "StrokeStaticMeshComponent.generated.h"
 
-UCLASS(ClassGroup=(Rendering, Common), hidecategories=Object,  editinlinenew, meta=(BlueprintSpawnableComponent))
+UCLASS(ClassGroup = (Rendering, Common), hidecategories = Object, editinlinenew, meta = (BlueprintSpawnableComponent))
 class UStrokeStaticMeshComponent : public UStaticMeshComponent
 {
 	GENERATED_UCLASS_BODY()
@@ -18,5 +18,5 @@ public:
 	UMaterialInterface* SecondPassMaterial = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MultiplePass")
-	bool NeedSecondPass=false;
+	bool NeedSecondPass = false;
 };

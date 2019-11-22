@@ -4,15 +4,17 @@
 #include "Engine/Public/SkeletalRenderPublic.h"
 #define LOCTEXT_NAMESPACE "StrokeSkeletalMeshSceneProxy"
 
-FStrokeSkeletalMeshSceneProxy::FStrokeSkeletalMeshSceneProxy(const USkinnedMeshComponent* Component, FSkeletalMeshRenderData* InSkelMeshRenderData):
-	FSkeletalMeshSceneProxy(Component,InSkelMeshRenderData),ComponentPtr(Component)
+FStrokeSkeletalMeshSceneProxy::FStrokeSkeletalMeshSceneProxy(
+	const USkinnedMeshComponent* Component, FSkeletalMeshRenderData* InSkelMeshRenderData)
+	: FSkeletalMeshSceneProxy(Component, InSkelMeshRenderData), ComponentPtr(Component)
 {
 }
 
 class FSkeletalMeshSectionIter
 {
 public:
-	FSkeletalMeshSectionIter(const int32 InLODIdx, const FSkeletalMeshObject& InMeshObject, const FSkeletalMeshLODRenderData& InLODData, const FSkeletalMeshSceneProxy::FLODSectionElements& InLODSectionElements)
+	FSkeletalMeshSectionIter(const int32 InLODIdx, const FSkeletalMeshObject& InMeshObject,
+		const FSkeletalMeshLODRenderData& InLODData, const FSkeletalMeshSceneProxy::FLODSectionElements& InLODSectionElements)
 		: SectionIndex(0)
 		, MeshObject(InMeshObject)
 		, LODSectionElements(InLODSectionElements)
@@ -59,8 +61,7 @@ public:
 		{
 			int32 ActualPreviewSectionIdx = SectionIndexPreview;
 
-			return	(SectionIndex < Sections.Num()) &&
-				((ActualPreviewSectionIdx >= 0) && (ActualPreviewSectionIdx != SectionIndex));
+			return (SectionIndex < Sections.Num()) && ((ActualPreviewSectionIdx >= 0) && (ActualPreviewSectionIdx != SectionIndex));
 		}
 		else
 		{
@@ -75,13 +76,14 @@ public:
 				}
 			}
 
-			return	(SectionIndex < Sections.Num()) &&
-				((ActualPreviewMaterialIdx >= 0) && (ActualPreviewSectionIdx != SectionIndex));
+			return (SectionIndex < Sections.Num()) &&
+				   ((ActualPreviewMaterialIdx >= 0) && (ActualPreviewSectionIdx != SectionIndex));
 		}
 #else
 		return false;
 #endif
 	}
+
 private:
 	int32 SectionIndex;
 	const FSkeletalMeshObject& MeshObject;
@@ -93,10 +95,11 @@ private:
 #endif
 };
 
-void FStrokeSkeletalMeshSceneProxy::GetDynamicMeshElements(const TArray<const FSceneView*>& Views, const FSceneViewFamily& ViewFamily, uint32 VisibilityMap, FMeshElementCollector& Collector) const
+void FStrokeSkeletalMeshSceneProxy::GetDynamicMeshElements(const TArray<const FSceneView*>& Views,
+	const FSceneViewFamily& ViewFamily, uint32 VisibilityMap, FMeshElementCollector& Collector) const
 {
 	QUICK_SCOPE_CYCLE_COUNTER(STAT_FStrokeSkeletalMeshSceneProxy_GetMeshElements);
-	
+
 	if (!MeshObject)
 	{
 		return;
@@ -137,7 +140,8 @@ void FStrokeSkeletalMeshSceneProxy::GetDynamicMeshElements(const TArray<const FS
 #endif
 			// If hidden skip the draw
 			check(MeshObject->LODInfo.IsValidIndex(LODIndex));
-			bool bHide= MeshObject->LODInfo[LODIndex].HiddenMaterials.IsValidIndex(SectionElementInfo.UseMaterialIndex) && MeshObject->LODInfo[LODIndex].HiddenMaterials[SectionElementInfo.UseMaterialIndex];
+			bool bHide = MeshObject->LODInfo[LODIndex].HiddenMaterials.IsValidIndex(SectionElementInfo.UseMaterialIndex) &&
+						 MeshObject->LODInfo[LODIndex].HiddenMaterials[SectionElementInfo.UseMaterialIndex];
 
 			if (bHide || Section.bDisabled)
 			{
@@ -150,21 +154,26 @@ void FStrokeSkeletalMeshSceneProxy::GetDynamicMeshElements(const TArray<const FS
 				continue;
 			}
 			*/
-			const UStrokeSkeletalMeshComponent* StrokeSkeletalMeshComponent = dynamic_cast<const UStrokeSkeletalMeshComponent *>(ComponentPtr);
-			if (SectionElementInfo.Material== StrokeSkeletalMeshComponent->SecondPassMaterial)
+			const UStrokeSkeletalMeshComponent* StrokeSkeletalMeshComponent =
+				dynamic_cast<const UStrokeSkeletalMeshComponent*>(ComponentPtr);
+			if (SectionElementInfo.Material == StrokeSkeletalMeshComponent->SecondPassMaterial)
 			{
 				continue;
 			}
-			GetDynamicElementsSection(Views, ViewFamily, VisibilityMap, LODData, LODIndex, SectionIndex, bSectionSelected, SectionElementInfo, true, Collector);
-			
+			GetDynamicElementsSection(Views, ViewFamily, VisibilityMap, LODData, LODIndex, SectionIndex, bSectionSelected,
+				SectionElementInfo, true, Collector);
+
 			//轮廓
-			if (StrokeSkeletalMeshComponent->NeedSecondPass) {
+			if (StrokeSkeletalMeshComponent->NeedSecondPass)
+			{
 				FSectionElementInfo Info = FSectionElementInfo(SectionElementInfo);
-				if (StrokeSkeletalMeshComponent->SecondPassMaterial == nullptr) {
+				if (StrokeSkeletalMeshComponent->SecondPassMaterial == nullptr)
+				{
 					continue;
 				}
 				Info.Material = StrokeSkeletalMeshComponent->SecondPassMaterial;
-				GetDynamicElementsSection(Views, ViewFamily, VisibilityMap, LODData, LODIndex, SectionIndex, bSectionSelected, Info, true, Collector);
+				GetDynamicElementsSection(
+					Views, ViewFamily, VisibilityMap, LODData, LODIndex, SectionIndex, bSectionSelected, Info, true, Collector);
 			}
 		}
 	}
@@ -189,7 +198,8 @@ void FStrokeSkeletalMeshSceneProxy::GetDynamicMeshElements(const TArray<const FS
 					{
 						if (ComponentSpaceTransforms.IsValidIndex(DebugMass.BoneIndex))
 						{
-							const FTransform BoneToWorld = ComponentSpaceTransforms[DebugMass.BoneIndex] * FTransform(GetLocalToWorld());
+							const FTransform BoneToWorld =
+								ComponentSpaceTransforms[DebugMass.BoneIndex] * FTransform(GetLocalToWorld());
 							DebugMass.DrawDebugMass(PDI, BoneToWorld);
 						}
 					}

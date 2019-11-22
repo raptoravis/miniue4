@@ -38,4 +38,6 @@ void MainPS(
             OutColor *= SimpleUniformStruct.Color4;  
             break;  
     }  
+
+    OutColor = SimpleColor;
 }

@@ -8,7 +8,7 @@ public:
 	FStrokeStaticMeshSceneProxy(UStaticMeshComponent* Component, bool bForceLODsShareStaticLighting);
 
 	virtual void DrawStaticElements(FStaticPrimitiveDrawInterface* PDI) override;
-	
+
 private:
 	UPROPERTY()
 	const UStaticMeshComponent* ComponentPtr;

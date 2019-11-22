@@ -6,13 +6,12 @@
 //#include "Engine/Classes/Materials/MaterialInstance.h"
 #define LOCTEXT_NAMESPACE "StrokeSkeletalMeshComponent"
 
-UStrokeSkeletalMeshComponent::UStrokeSkeletalMeshComponent(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+UStrokeSkeletalMeshComponent::UStrokeSkeletalMeshComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-
 }
 
-void UStrokeSkeletalMeshComponent::GetUsedMaterials(TArray<UMaterialInterface*>& OutMaterials, bool bGetDebugMaterials /*= false*/) const
+void UStrokeSkeletalMeshComponent::GetUsedMaterials(
+	TArray<UMaterialInterface*>& OutMaterials, bool bGetDebugMaterials /*= false*/) const
 {
 	if (SkeletalMesh)
 	{
@@ -20,7 +19,7 @@ void UStrokeSkeletalMeshComponent::GetUsedMaterials(TArray<UMaterialInterface*>&
 		const int32 NumMaterials = FMath::Max(SkeletalMesh->Materials.Num(), OverrideMaterials.Num());
 		for (int32 MatIdx = 0; MatIdx < NumMaterials; ++MatIdx)
 		{
-			// GetMaterial will determine the correct material to use for this index.  
+			// GetMaterial will determine the correct material to use for this index.
 
 			UMaterialInterface* MaterialInterface = GetMaterial(MatIdx);
 			OutMaterials.Add(MaterialInterface);
@@ -35,7 +34,7 @@ void UStrokeSkeletalMeshComponent::GetUsedMaterials(TArray<UMaterialInterface*>&
 	if (bGetDebugMaterials)
 	{
 #if WITH_EDITOR
-		//if (UPhysicsAsset* PhysicsAssetForDebug = GetPhysicsAsset())
+		// if (UPhysicsAsset* PhysicsAssetForDebug = GetPhysicsAsset())
 		//{
 		//	PhysicsAssetForDebug->GetUsedMaterials(OutMaterials);
 		//}
@@ -48,16 +47,14 @@ FPrimitiveSceneProxy* UStrokeSkeletalMeshComponent::CreateSceneProxy()
 	ERHIFeatureLevel::Type SceneFeatureLevel = GetWorld()->FeatureLevel;
 
 	FStrokeSkeletalMeshSceneProxy* Result = nullptr;
-	//FSkeletalMeshSceneProxy* Result = nullptr;
+	// FSkeletalMeshSceneProxy* Result = nullptr;
 	FSkeletalMeshRenderData* SkelMeshRenderData = GetSkeletalMeshRenderData();
 
 	// Only create a scene proxy for rendering if properly initialized
-	if (SkelMeshRenderData &&
-		SkelMeshRenderData->LODRenderData.IsValidIndex(PredictedLODLevel) &&
-		!bHideSkin &&
-		MeshObject)
+	if (SkelMeshRenderData && SkelMeshRenderData->LODRenderData.IsValidIndex(PredictedLODLevel) && !bHideSkin && MeshObject)
 	{
-		// Only create a scene proxy if the bone count being used is supported, or if we don't have a skeleton (this is the case with destructibles)
+		// Only create a scene proxy if the bone count being used is supported, or if we don't have a skeleton (this is the case
+		// with destructibles)
 		int32 MaxBonesPerChunk = SkelMeshRenderData->GetMaxBonesPerSection();
 		int32 MaxSupportedNumBones = MeshObject->IsCPUSkinned() ? MAX_int32 : GetFeatureLevelMaxNumberOfBones(SceneFeatureLevel);
 		if (MaxBonesPerChunk <= MaxSupportedNumBones)
@@ -73,13 +70,14 @@ FPrimitiveSceneProxy* UStrokeSkeletalMeshComponent::CreateSceneProxy()
 	return Result;
 }
 
-//UMaterialInterface* UStrokeSkeletalMeshComponent::GetMaterial(int32 MaterialIndex) const
+// UMaterialInterface* UStrokeSkeletalMeshComponent::GetMaterial(int32 MaterialIndex) const
 //{
 //	if (OverrideMaterials.IsValidIndex(MaterialIndex) && OverrideMaterials[MaterialIndex])
 //	{
 //		return OverrideMaterials[MaterialIndex];
 //	}
-//	else if (SkeletalMesh && SkeletalMesh->Materials.IsValidIndex(MaterialIndex) && SkeletalMesh->Materials[MaterialIndex].MaterialInterface)
+//	else if (SkeletalMesh && SkeletalMesh->Materials.IsValidIndex(MaterialIndex) &&
+// SkeletalMesh->Materials[MaterialIndex].MaterialInterface)
 //	{
 //		return SkeletalMesh->Materials[MaterialIndex].MaterialInterface;
 //	}

@@ -3,7 +3,7 @@
 #include "Engine/Classes/Components/SkeletalMeshComponent.h"
 #include "StrokeSkeletalMeshComponent.generated.h"
 
-UCLASS(ClassGroup=(Rendering, Common), hidecategories=Object,  editinlinenew, meta=(BlueprintSpawnableComponent))
+UCLASS(ClassGroup = (Rendering, Common), hidecategories = Object, editinlinenew, meta = (BlueprintSpawnableComponent))
 class UStrokeSkeletalMeshComponent : public USkeletalMeshComponent
 {
 	GENERATED_UCLASS_BODY()
@@ -14,11 +14,11 @@ class UStrokeSkeletalMeshComponent : public USkeletalMeshComponent
 	virtual FPrimitiveSceneProxy* CreateSceneProxy() override;
 	//~ End UPrimitiveComponent Interface
 
-	//virtual UMaterialInterface* GetMaterial(int32 MaterialIndex) const override;
+	// virtual UMaterialInterface* GetMaterial(int32 MaterialIndex) const override;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MultiplePass")
 	UMaterialInterface* SecondPassMaterial = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MultiplePass")
-	bool NeedSecondPass=false;
+	bool NeedSecondPass = false;
 };
