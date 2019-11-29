@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{1638036C-4EB4-A4FB-3DD6-8C8F48188331}",
+	"EngineAssociation": "{6EEB21AA-4B75-2F09-D0D9-42A55E2207E9}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -19,9 +19,8 @@
 			"Enabled": true
 		},
 		{
-			"Name": "OptickPlugin",
-			"Enabled": true,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/95c078f6fa924b2b82fd8f281e04850f"
+			"Name": "Ffmpeg",
+			"Enabled": false
 		}
 	]
 }
