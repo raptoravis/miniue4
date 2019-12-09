@@ -15,10 +15,6 @@
 	],
 	"Plugins": [
 		{
-			"Name": "RenderDocPlugin",
-			"Enabled": true
-		},
-		{
 			"Name": "Ffmpeg",
 			"Enabled": false
 		}
