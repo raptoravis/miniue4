@@ -6,7 +6,9 @@ namespace UnrealBuildTool.Rules {
             PrivateDependencyModuleNames.AddRange(
                 new string[]
                 {                   
-                    "GoogleTest"
+                    "Core",
+                    "GoogleTest",
+                    "ExampleGameCore"
                 }
             );
             PrivatePCHHeaderFile = "Private/GoogleTestApp.h";

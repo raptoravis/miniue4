@@ -1,21 +1,19 @@
 {
-    "FileVersion": 3,
-    "EngineAssociation": "",
-    "Category": "",
-    "Description": "",
-    "Modules": [
-      {
-        "Name": "GoogleTest",
-        "Type": "Runtime",
-        "LoadingPhase": "Default"
-      },  
-    ],
-    "Plugins": [
-         
-    ],
-    "TargetPlatforms": [
-        "WindowsNoEditor",
-        "XboxOne",
-        "UWP64"
-    ]
+	"FileVersion": 3,
+	"EngineAssociation": "{41621414-42B6-BE1B-06C8-4DAF89A2CAD1}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "GoogleTest",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [],
+	"TargetPlatforms": [
+		"WindowsNoEditor",
+		"XboxOne",
+		"UWP64"
+	]
 }
