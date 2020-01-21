@@ -24,23 +24,30 @@ void MainPS(
     out float4 OutColor : SV_Target0  
     )  
 {  
-    OutColor = float4(MyTexture.Sample(MyTextureSampler, UV.xy).rgb, 1.0f);  
-    switch (FMyUniform.ColorIndex)  
-    {  
-        case 0 :  
-            OutColor *= FMyUniform.ColorOne;  
-            break;  
-        case 1:  
-            OutColor *= FMyUniform.ColorTwo;  
-            break;  
-        case 2:  
-            OutColor *= FMyUniform.ColorThree;  
-            break;  
-        case 3:  
-            OutColor *= FMyUniform.ColorFour;  
-            break;  
-    }  
-      
+    if (FMyUniform.ColorIndex == 0)
+    {
+        OutColor = SimpleColor;
+    }
+    else
+    {
+        OutColor = float4(MyTexture.Sample(MyTextureSampler, UV.xy).rgb, 1.0f);
+        switch (FMyUniform.ColorIndex)
+        {
+            case -1:
+            case 1:
+                OutColor *= FMyUniform.ColorOne;
+                break;
+            case 2:
+                OutColor *= FMyUniform.ColorTwo;
+                break;
+            case 3:
+                OutColor *= FMyUniform.ColorThree;
+                break;
+            case 4:
+                OutColor *= FMyUniform.ColorFour;
+                break;
+        }
+    }
 }  
 
 

@@ -78,7 +78,6 @@ public:
 		UniformData.ColorThree = ShaderStructData.Colorthree;
 		UniformData.ColorFour = ShaderStructData.ColorFour;
 		UniformData.ColorIndex = ShaderStructData.ColorIndex;
-		UniformData.ColorIndex = ShaderStructData.ColorIndex;
 
 		SetUniformBufferParameterImmediate(
 			RHICmdList, GetPixelShader(), GetUniformBufferParameter<FMyUniformStructData>(), UniformData);
