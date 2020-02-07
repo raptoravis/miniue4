@@ -4,6 +4,7 @@ require 'TestProfile'
 -- some.field come from c++
 some.field.y = 103
 EPropertyClass = import"EPropertyClass"
+print(EPropertyClass.Byte, EPropertyClass.Int8);
 PrintLog("LuaStateInitCallback ok")
 function begin(uworld,uactor)
     gworld=uworld
@@ -19,6 +20,8 @@ function begin(uworld,uactor)
     local i2 = 200
     local s = "haha"
     local v3, v2, i2 = t:TestStruct(v, 2, v2, i, i2, s)
+
+    print("t:TestSTruct Return:", v3, v2, i2);
 
     local e = import("EMeshBufferAccess")
     for k,v in pairs(e) do

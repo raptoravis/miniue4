@@ -658,12 +658,23 @@ namespace NS_SLUA {
 			cachePropertys(L, cls);
 			up = LuaObject::findCacheProperty(L, cls, name);
 		}
-		if (!up) luaL_error(L, "Property %s not found", name);
+
+		if (!up) 
+		{
+			luaL_error(L, "Property %s not found", name);
+		}
+
         if(up->GetPropertyFlags() & CPF_BlueprintReadOnly)
+		{
             luaL_error(L,"Property %s is readonly",name);
+		}
 
         auto checker = LuaObject::getChecker(up);
-        if(!checker) luaL_error(L,"Property %s type is not support",name);
+        if(!checker) 
+		{
+			luaL_error(L, "Property %s type is not support", name);
+		}
+
         // set property value
         checker(L,up,up->ContainerPtrToValuePtr<uint8>(obj),3);
         return 0;

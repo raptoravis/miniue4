@@ -5,9 +5,9 @@ local actor={}
 local EPropertyClass = import"EPropertyClass"
 -- override event from blueprint
 function actor:ReceiveBeginPlay()
-    self.bCanEverTick = true
+    -- self.bCanEverTick = true
     -- set bCanBeDamaged property in parent
-    self.bCanBeDamaged = false
+    -- self.bCanBeDamaged = false
     print("actor:ReceiveBeginPlay")
 
     local world = self:GetWorld()
