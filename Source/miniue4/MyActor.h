@@ -6,24 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "MyActor.generated.h"
 
-UENUM(BlueprintType)
-enum class EMyEnum : uint8
-{
-	MY_Dance UMETA(DisplayName = "Dance"),
-	MY_Rain UMETA(DisplayName = "Rain"),
-	MY_Song UMETA(DisplayName = "Song")
-};
-
-USTRUCT(BlueprintType)
-struct MINIUE4_API FMyStruct
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite)
-	float Score;
-};
-
-
 UCLASS()
 class MINIUE4_API AMyActor : public AActor
 {
