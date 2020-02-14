@@ -6,6 +6,24 @@
 #include "GameFramework/Actor.h"
 #include "MyActor.generated.h"
 
+UENUM(BlueprintType)
+enum class EMyEnum : uint8
+{
+	MY_Dance UMETA(DisplayName = "Dance"),
+	MY_Rain UMETA(DisplayName = "Rain"),
+	MY_Song UMETA(DisplayName = "Song")
+};
+
+USTRUCT(BlueprintType)
+struct MINIUE4_API FMyStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	float Score;
+};
+
+
 UCLASS()
 class MINIUE4_API AMyActor : public AActor
 {
@@ -23,4 +41,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	UPROPERTY(BlueprintReadWrite)
+	float Score;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Hello")
+	void CallableFunc();	// C++实现，蓝图调用
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Hello")
+	void NativeFunc();	// C++实现默认版本，蓝图可重载实现
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Hello")
+	void ImplementableFunc();	// C++不实现，蓝图实现
 };
