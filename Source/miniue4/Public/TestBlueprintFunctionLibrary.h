@@ -46,6 +46,12 @@ class MINIUE4_API UTestBlueprintFunctionLibrary : public UBlueprintFunctionLibra
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"))
+	static void SayHello_Internal();
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"))
+	static void SaySomething_Internal(const TArray<FString>& InWords);
+
 	UFUNCTION(BlueprintCallable)
 	static int Sum(int a, int b);
 

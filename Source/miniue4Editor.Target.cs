@@ -9,6 +9,6 @@ public class miniue4EditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 
-		ExtraModuleNames.AddRange( new string[] { "miniue4" } );
+		ExtraModuleNames.AddRange( new string[] { "miniue4", "miniue4Editor" } );
 	}
 }
