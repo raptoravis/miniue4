@@ -12,14 +12,14 @@
 				"Engine"
 			]
 		},
-    {
-      "Name": "miniue4Editor",
-      "Type": "Editor",
-      "LoadingPhase": "Default",
-      "AdditionalDependencies": [
-        "Engine"
-      ]
-    }
+		{
+			"Name": "miniue4Editor",
+			"Type": "Editor",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
 	],
 	"Plugins": [
 		{
