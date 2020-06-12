@@ -16,7 +16,7 @@ void SGraphNodeSaySomething::Construct(const FArguments& InArgs, UBPNode_SaySome
 {
 	this->GraphNode = InNode;
 
-	this->SetCursor( EMouseCursor::CardinalCross );
+	this->SetCursor(EMouseCursor::CardinalCross);
 
 	this->UpdateGraphNode();
 }
@@ -29,13 +29,7 @@ void SGraphNodeSaySomething::CreateInputSideAddButton(TSharedPtr<SVerticalBox> I
 	FMargin AddPinPadding = Settings->GetInputPinPadding();
 	AddPinPadding.Top += 6.0f;
 
-	InputBox->AddSlot()
-	.AutoHeight()
-	.VAlign(VAlign_Center)
-	.Padding(AddPinPadding)
-	[
-		AddPinButton
-	];
+	InputBox->AddSlot().AutoHeight().VAlign(VAlign_Center).Padding(AddPinPadding)[AddPinButton];
 }
 
 FReply SGraphNodeSaySomething::OnAddPin()

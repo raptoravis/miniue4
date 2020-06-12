@@ -22,7 +22,8 @@ void AMyActor::Tick(float DeltaTime)
 }
 
 void AMyActor::CallableFunc()
-{}
+{
+}
 
 void AMyActor::NativeFunc_Implementation()
 {

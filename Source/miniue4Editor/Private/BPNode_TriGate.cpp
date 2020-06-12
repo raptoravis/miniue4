@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BPNode_TriGate.h"
-#include "EdGraphSchema_K2.h"	// BlueprintGraph
-#include "BlueprintNodeSpawner.h"	// BlueprintGraph
+#include "EdGraphSchema_K2.h"					 // BlueprintGraph
+#include "BlueprintNodeSpawner.h"				 // BlueprintGraph
 #include "BlueprintActionDatabaseRegistrar.h"	// BlueprintGraph
 #include "BPTerminal.h"
 #include "KismetCompilerMisc.h"
@@ -13,11 +12,11 @@
 
 namespace TriGatePN
 {
-	FName Input = TEXT("Integer");
-	FName Positive = TEXT("Positive");
-	FName Zero = TEXT("Zero");
-	FName Negative = TEXT("Negative");
-}
+FName Input = TEXT("Integer");
+FName Positive = TEXT("Positive");
+FName Zero = TEXT("Zero");
+FName Negative = TEXT("Negative");
+}	// namespace TriGatePN
 
 class FKCHandler_TriGate : public FNodeHandlingFunctor
 {
@@ -27,8 +26,7 @@ protected:
 	FBPTerminal* LiteralZeroTerm;
 
 public:
-	FKCHandler_TriGate(FKismetCompilerContext& InCompilerContext)
-		: FNodeHandlingFunctor(InCompilerContext)
+	FKCHandler_TriGate(FKismetCompilerContext& InCompilerContext) : FNodeHandlingFunctor(InCompilerContext)
 	{
 	}
 
@@ -46,7 +44,6 @@ public:
 		LiteralZeroTerm->bIsLiteral = true;
 		LiteralZeroTerm->Type.PinCategory = UEdGraphSchema_K2::PC_Int;
 		LiteralZeroTerm->Name = TEXT("0");
-
 	}
 
 	virtual void RegisterNet(FKismetFunctionContext& Context, UEdGraphPin* Pin)
@@ -121,7 +118,6 @@ public:
 		FBlueprintCompiledStatement& ExecZero = Context.AppendStatementForNode(Node);
 		ExecZero.Type = KCST_UnconditionalGoto;
 		Context.GotoFixupRequestMap.Add(&ExecZero, ZeroPin);
-
 	}
 };
 
@@ -133,7 +129,6 @@ void UBPNode_TriGate::AllocateDefaultPins()
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, TriGatePN::Positive);
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, TriGatePN::Zero);
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, TriGatePN::Negative);
-
 }
 
 void UBPNode_TriGate::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
@@ -149,7 +144,7 @@ void UBPNode_TriGate::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRe
 	}
 }
 
-FNodeHandlingFunctor * UBPNode_TriGate::CreateNodeHandler(FKismetCompilerContext & CompilerContext) const
+FNodeHandlingFunctor* UBPNode_TriGate::CreateNodeHandler(FKismetCompilerContext& CompilerContext) const
 {
 	return new FKCHandler_TriGate(CompilerContext);
 }

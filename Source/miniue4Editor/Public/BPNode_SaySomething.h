@@ -18,13 +18,22 @@ public:
 	// UEdGraphNode interface
 	virtual void AllocateDefaultPins() override;
 
-	virtual FText GetTooltipText() const override { return FText::FromString(TEXT("a dynamic pin demo node")); }
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString(TEXT("Say Something")); }
+	virtual FText GetTooltipText() const override
+	{
+		return FText::FromString(TEXT("a dynamic pin demo node"));
+	}
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return FText::FromString(TEXT("Say Something"));
+	}
 	virtual void GetContextMenuActions(const FGraphNodeContextMenuBuilder& Context) const override;
 	// End of UEdGraphNode interface
 
 	// UK2Node interface
-	virtual FText GetMenuCategory() const { return FText::FromString(TEXT("MyBlueprintNodes")); }
+	virtual FText GetMenuCategory() const
+	{
+		return FText::FromString(TEXT("MyBlueprintNodes"));
+	}
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 
 	virtual void ExpandNode(class FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;

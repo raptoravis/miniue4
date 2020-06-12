@@ -14,10 +14,13 @@ class UBPNode_SaySomething;
 class SGraphNodeSaySomething : public SGraphNodeK2Base
 {
 public:
-	SLATE_BEGIN_ARGS(SGraphNodeSaySomething){}
+	SLATE_BEGIN_ARGS(SGraphNodeSaySomething)
+	{
+	}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UBPNode_SaySomething* InNode);
+
 protected:
 	virtual void CreateInputSideAddButton(TSharedPtr<SVerticalBox> InputBox) override;
 	virtual FReply OnAddPin() override;

@@ -2,27 +2,27 @@
 
 namespace UnrealBuildTool.Rules
 {
-	public class miniue4Editor : ModuleRules
-	{
+    public class miniue4Editor : ModuleRules
+    {
         public miniue4Editor(ReadOnlyTargetRules Target) : base(Target)
-		{
-			PublicDependencyModuleNames.AddRange(
-				new string[]
-				{
-					"Core",
-					"CoreUObject",
-					"Engine",
-					"UnrealEd",
+        {
+            PublicDependencyModuleNames.AddRange(
+                new string[]
+                {
+                    "Core",
+                    "CoreUObject",
+                    "Engine",
+                    "UnrealEd",
                     "Slate",
                     "SlateCore",
                     "EditorStyle",
                     "GraphEditor",
-					"BlueprintGraph",
-                    "KismetCompiler", 
-					"MessageLog",
+                    "BlueprintGraph",
+                    "KismetCompiler",
+                    "MessageLog",
                     "miniue4"
-				}
-			);
-		}
-	}
+                }
+            );
+        }
+    }
 }

@@ -6,7 +6,6 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "TestBlueprintFunctionLibrary.generated.h"
 
-
 USTRUCT(Blueprintable)
 struct FMyStructTest
 {
@@ -25,7 +24,6 @@ struct FDummyStruct
 	GENERATED_USTRUCT_BODY()
 };
 
-
 #define P_GET_GENERIC_ARRAY(ArrayAddr, ArrayProperty)                               \
 	Stack.MostRecentProperty = nullptr;                                             \
 	Stack.StepCompiledIn<UArrayProperty>(NULL);                                     \
@@ -38,7 +36,7 @@ struct FDummyStruct
 	}
 
 /**
- * 
+ *
  */
 UCLASS()
 class MINIUE4_API UTestBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
@@ -97,7 +95,6 @@ public:
 
 	static float GenericArray_NumericPropertyAverage(
 		const void* TargetArray, const UArrayProperty* ArrayProperty, FName ArrayPropertyName);
-
 
 	DECLARE_FUNCTION(execArray_NumericPropertyAverage)
 	{

@@ -2,12 +2,12 @@
 #include "BPNode_SaySomething.h"
 #include "SGraphNodeSaySomething.h"
 
-#include "BlueprintNodeSpawner.h"	// BlueprintGraph
+#include "BlueprintNodeSpawner.h"				 // BlueprintGraph
 #include "BlueprintActionDatabaseRegistrar.h"	// BlueprintGraph
-#include "EdGraphSchema_K2.h"	// BlueprintGraph
-#include "K2Node_CallFunction.h"	// BlueprintGraph
-#include "K2Node_MakeArray.h"	// BlueprintGraph
-#include "KismetCompiler.h"	// KismetCompiler
+#include "EdGraphSchema_K2.h"					 // BlueprintGraph
+#include "K2Node_CallFunction.h"				 // BlueprintGraph
+#include "K2Node_MakeArray.h"					 // BlueprintGraph
+#include "KismetCompiler.h"						 // KismetCompiler
 #include "EdGraph/EdGraphNode.h"
 #include "ScopedTransaction.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
@@ -15,17 +15,18 @@
 
 #include "TestBlueprintFunctionLibrary.h"
 
-void UBPNode_SaySomething::AllocateDefaultPins() {
-
+void UBPNode_SaySomething::AllocateDefaultPins()
+{
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Execute);
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
 
-	for (const FName& PinName : ArgPinNames) {
+	for (const FName& PinName : ArgPinNames)
+	{
 		CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, PinName);
 	}
 }
 
-void UBPNode_SaySomething::GetContextMenuActions(const FGraphNodeContextMenuBuilder & Context) const
+void UBPNode_SaySomething::GetContextMenuActions(const FGraphNodeContextMenuBuilder& Context) const
 {
 	Super::GetContextMenuActions(Context);
 
@@ -38,21 +39,18 @@ void UBPNode_SaySomething::GetContextMenuActions(const FGraphNodeContextMenuBuil
 	{
 		if (Context.Pin->Direction == EGPD_Input && Context.Pin->ParentPin == nullptr)
 		{
-			Context.MenuBuilder->AddMenuEntry(
-				FText::FromString(TEXT("Remove Word")),
-				FText::FromString(TEXT("Remove Word from input")),
-				FSlateIcon(),
-				FUIAction(
-					FExecuteAction::CreateUObject(this, &UBPNode_SaySomething::RemoveInputPin, const_cast<UEdGraphPin*>(Context.Pin))
-				)
-			);
+			Context.MenuBuilder->AddMenuEntry(FText::FromString(TEXT("Remove Word")),
+				FText::FromString(TEXT("Remove Word from input")), FSlateIcon(),
+				FUIAction(FExecuteAction::CreateUObject(
+					this, &UBPNode_SaySomething::RemoveInputPin, const_cast<UEdGraphPin*>(Context.Pin))));
 		}
-	}// end of if
+	}	// end of if
 
 	Context.MenuBuilder->EndSection();
 }
 
-void UBPNode_SaySomething::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const {
+void UBPNode_SaySomething::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
+{
 	UClass* ActionKey = GetClass();
 
 	if (ActionRegistrar.IsOpenForRegistration(ActionKey))
@@ -64,13 +62,14 @@ void UBPNode_SaySomething::GetMenuActions(FBlueprintActionDatabaseRegistrar& Act
 	}
 }
 
-void UBPNode_SaySomething::ExpandNode(FKismetCompilerContext & CompilerContext, UEdGraph * SourceGraph) {
+void UBPNode_SaySomething::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
+{
 	Super::ExpandNode(CompilerContext, SourceGraph);
 
 	UEdGraphPin* ExecPin = GetExecPin();
 	UEdGraphPin* ThenPin = GetThenPin();
-	if (ExecPin && ThenPin) {
-
+	if (ExecPin && ThenPin)
+	{
 		// create a CallFunction node
 		FName MyFunctionName = GET_FUNCTION_NAME_CHECKED(UTestBlueprintFunctionLibrary, SaySomething_Internal);
 
@@ -95,8 +94,8 @@ void UBPNode_SaySomething::ExpandNode(FKismetCompilerContext & CompilerContext, 
 		MakeArrayNode->PinConnectionListChanged(ArrayOut);
 
 		// connect all arg pin to Make Array input
-		for (int32 i = 0; i < ArgPinNames.Num(); i++) {
-
+		for (int32 i = 0; i < ArgPinNames.Num(); i++)
+		{
 			// Make Array node has one input by default
 			if (i > 0)
 				MakeArrayNode->AddInputPin();
@@ -105,10 +104,10 @@ void UBPNode_SaySomething::ExpandNode(FKismetCompilerContext & CompilerContext, 
 			const FString PinName = FString::Printf(TEXT("[%d]"), i);
 			UEdGraphPin* ArrayInputPin = MakeArrayNode->FindPinChecked(PinName);
 
-			// move input word to array 
+			// move input word to array
 			UEdGraphPin* MyInputPin = FindPinChecked(ArgPinNames[i], EGPD_Input);
 			CompilerContext.MovePinLinksToIntermediate(*MyInputPin, *ArrayInputPin);
-		}// end of for
+		}	// end of for
 	}
 
 	// break any links to the expanded node
@@ -118,11 +117,12 @@ void UBPNode_SaySomething::ExpandNode(FKismetCompilerContext & CompilerContext, 
 UEdGraphPin* UBPNode_SaySomething::GetThenPin() const
 {
 	UEdGraphPin* Pin = FindPin(UEdGraphSchema_K2::PN_Then);
-	check(Pin == nullptr || Pin->Direction == EGPD_Output); // If pin exists, it must be output
+	check(Pin == nullptr || Pin->Direction == EGPD_Output);	// If pin exists, it must be output
 	return Pin;
 }
 
-TSharedPtr<SGraphNode> UBPNode_SaySomething::CreateVisualWidget() {
+TSharedPtr<SGraphNode> UBPNode_SaySomething::CreateVisualWidget()
+{
 	return SNew(SGraphNodeSaySomething, this);
 }
 
@@ -130,9 +130,7 @@ void UBPNode_SaySomething::AddPinToNode()
 {
 	Modify();
 
-	TMap<FString, FStringFormatArg> FormatArgs = {
-			{TEXT("Count"), ArgPinNames.Num()}
-	};
+	TMap<FString, FStringFormatArg> FormatArgs = {{TEXT("Count"), ArgPinNames.Num()}};
 
 	FName NewPinName(*FString::Format(TEXT("Word {Count}"), FormatArgs));
 	ArgPinNames.Add(NewPinName);
@@ -140,7 +138,7 @@ void UBPNode_SaySomething::AddPinToNode()
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, NewPinName);
 }
 
-void UBPNode_SaySomething::RemoveInputPin(UEdGraphPin * Pin)
+void UBPNode_SaySomething::RemoveInputPin(UEdGraphPin* Pin)
 {
 	FScopedTransaction Transaction(FText::FromString("SaySomething_RemoveInputPin"));
 	Modify();
