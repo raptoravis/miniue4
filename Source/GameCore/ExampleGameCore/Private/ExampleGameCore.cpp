@@ -1,5 +1,6 @@
 #include "ExampleGameCore.h"
 
+
 DEFINE_LOG_CATEGORY(LogExampleGameCore);
 
 class FExampleGameCore : public IModuleInterface

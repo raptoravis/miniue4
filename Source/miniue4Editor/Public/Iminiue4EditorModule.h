@@ -33,3 +33,4 @@ public:
 		return FModuleManager::Get().IsModuleLoaded("miniue4Editor");
 	}
 };
+

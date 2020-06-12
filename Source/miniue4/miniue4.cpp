@@ -3,4 +3,4 @@
 #include "miniue4.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, miniue4, "miniue4");
+IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, miniue4, "miniue4" );

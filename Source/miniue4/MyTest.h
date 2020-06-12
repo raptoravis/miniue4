@@ -23,6 +23,7 @@ struct MINIUE4_API FMyStruct
 	float Score;
 };
 
+
 UINTERFACE(BlueprintType, Blueprintable)
 class MINIUE4_API UMyInterface : public UInterface
 {
@@ -57,3 +58,4 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Hello")
 	void ImplementableFunc();	// C++不实现，蓝图实现
 };
+

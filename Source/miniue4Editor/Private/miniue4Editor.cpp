@@ -38,7 +38,7 @@ void UBPNode_SayHello::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGr
 	Super::ExpandNode(CompilerContext, SourceGraph);
 
 	UEdGraphPin* ExecPin = GetExecPin();
-	// UEdGraphPin* ThenPin = GetThenPin();
+	//UEdGraphPin* ThenPin = GetThenPin();
 	UEdGraphPin* ThenPin = FindPin(UEdGraphSchema_K2::PN_Then);
 
 	if (ExecPin && ThenPin)

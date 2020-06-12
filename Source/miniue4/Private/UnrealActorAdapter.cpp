@@ -1,15 +1,15 @@
 #include "UnrealActorAdapter.h"
-
-UnrealActorAdapter::UnrealActorAdapter(AActor& actor) : mActor(actor)
+ 
+UnrealActorAdapter::UnrealActorAdapter(AActor& actor) :
+    mActor(actor)
 {
+ 
 }
-
-void UnrealActorAdapter::SetActorLocation(FVector location)
-{
-	mActor.SetActorLocation(location);
+ 
+void UnrealActorAdapter::SetActorLocation(FVector location) {
+    mActor.SetActorLocation(location);
 }
-
-FVector UnrealActorAdapter::GetActorLocation()
-{
-	return mActor.GetActorLocation();
+ 
+FVector UnrealActorAdapter::GetActorLocation() {
+    return mActor.GetActorLocation();
 }

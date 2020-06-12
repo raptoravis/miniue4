@@ -17,7 +17,8 @@ DEFINE_LOG_CATEGORY_STATIC(Logminiue4Editor, Verbose, All);
 class Fminiue4EditorModule : public Iminiue4EditorModule
 {
 public:
-	Fminiue4EditorModule() : Dumpminiue4EditorCmd(NULL)
+	Fminiue4EditorModule()
+		: Dumpminiue4EditorCmd(NULL)
 	{
 	}
 
@@ -28,15 +29,17 @@ public:
 
 private:
 	IConsoleObject* Dumpminiue4EditorCmd;
+
 };
 
 IMPLEMENT_MODULE(Fminiue4EditorModule, miniue4Editor)
+
 
 void Fminiue4EditorModule::StartupModule()
 {
 	if (!IsRunningCommandlet())
 	{
-		// Dumpminiue4EditorCmd = IConsoleManager::Get().RegisterConsoleCommand(
+		//Dumpminiue4EditorCmd = IConsoleManager::Get().RegisterConsoleCommand(
 		//	TEXT("Dumpminiue4Editor"),
 		//	TEXT("Dumps statistics about blueprint node usage to the log."),
 		//	FConsoleCommandDelegate::CreateStatic(Dumpminiue4Editor),
@@ -52,3 +55,5 @@ void Fminiue4EditorModule::ShutdownModule()
 		IConsoleManager::Get().UnregisterConsoleObject(Dumpminiue4EditorCmd);
 	}
 }
+
+

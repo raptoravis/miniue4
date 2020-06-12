@@ -10,10 +10,10 @@ public class miniue4 : ModuleRules
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ExampleGameCore" });
 
-        PrivateDependencyModuleNames.AddRange(new string[] { "slua_unreal", "slua_profile", "Slate", "SlateCore", "UMG", "Http" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "slua_unreal", "slua_profile", "Slate", "SlateCore", "UMG", "Http" });
 
         PrivateIncludePathModuleNames.AddRange(new string[] { "slua_unreal" });
-        PublicIncludePathModuleNames.AddRange(new string[] { "slua_unreal", "slua_profile" });
+        PublicIncludePathModuleNames.AddRange(new string[] { "slua_unreal","slua_profile" });
 
 #if UE_4_21_OR_LATER
         PublicDefinitions.Add("ENABLE_PROFILER");
